@@ -58,11 +58,12 @@ contract Voting{
         isVoteOn = true;
     }
 
-    function publishResults() external returns (address){
+    function publishResults() external payable{
         require(isVoteOn==true, "Vote is not going on now");
         require(msg.sender==owner, "Only owner can call this function");
         isVoteOn = false;
-        return topCandidate;
+        (bool sent, ) = owner.call{value: address(this).balance}("");
+        require(sent, "Failed to send Ether");
     }
 
     //getters

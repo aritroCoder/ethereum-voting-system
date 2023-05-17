@@ -157,5 +157,14 @@ describe("Voting Contract", function () {
         it("Does not allow anyone to end vote if not started", async function () {
             await expect(contract.publishResults()).to.be.revertedWith("Vote is not going on now")
         })
+
+        it("Sends contract balance to owner after vote is over", async function(){
+            await contract.startVote()
+            await contract.addCandidate({value: candidateEntranceFee})
+            await contract.connect(addr1).addVoter()
+            await contract.connect(addr1).vote(owner.address, {value: voteFee})
+            await contract.publishResults()
+            expect(await ethers.provider.getBalance(contract.address)).to.equal(0)
+        })
     })
 })
